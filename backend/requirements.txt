@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+pydantic
+python-multipart
+openai
+langchain
+PyPDF2
+pinecone-client
+chromadb
