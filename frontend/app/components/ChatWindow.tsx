@@ -1,11 +1,27 @@
 "use client";
+
 import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+
+interface Message {
+  role: "user" | "ai";
+  content: string;
+}
 
 export default function ChatWindow() {
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<{ role: string, text: string }[]>([]);
 
   const sendMessage = async () => {
+    if (!input.trim()) return;
+
+    const newMessages = [...messages, { role: "user" as const, content: input }];
+    setMessages(newMessages);
+    setInput("");
+
+    // 🔗 Call FastAPI
     const res = await fetch("http://localhost:8000/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -13,32 +29,34 @@ export default function ChatWindow() {
     });
 
     const data = await res.json();
-    setMessages([...messages, { role: "user", text: input }, { role: "ai", text: data.answer }]);
-    setInput("");
+
+    setMessages([
+      ...newMessages,
+      { role: "ai", content: data.answer },
+    ]);
   };
 
   return (
-    <div className="w-full max-w-lg mt-6">
-      <div className="border rounded-lg p-4 h-64 overflow-y-scroll bg-gray-50">
+    <div className="w-full max-w-2xl">
+      <div className="h-96 overflow-y-auto border rounded-md p-4 mb-4 space-y-2">
         {messages.map((msg, i) => (
-          <p key={i} className={msg.role === "user" ? "text-right" : "text-left"}>
-            <b>{msg.role}:</b> {msg.text}
-          </p>
+          <Card key={i} className={msg.role === "user" ? "bg-blue-50" : "bg-gray-100"}>
+            <CardContent className="p-2">
+              <p>
+                <strong>{msg.role === "user" ? "You" : "AI"}:</strong> {msg.content}
+              </p>
+            </CardContent>
+          </Card>
         ))}
       </div>
-      <div className="flex mt-2">
-        <input
+
+      <div className="flex gap-2">
+        <Input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="flex-1 border px-2 py-1 rounded-lg"
           placeholder="Ask something..."
         />
-        <button 
-          onClick={sendMessage} 
-          className="ml-2 px-4 py-1 bg-green-500 text-white rounded-lg"
-        >
-          Send
-        </button>
+        <Button onClick={sendMessage}>Send</Button>
       </div>
     </div>
   );
