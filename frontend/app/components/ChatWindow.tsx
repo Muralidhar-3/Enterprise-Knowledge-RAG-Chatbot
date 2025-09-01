@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 interface Message {
   role: "user" | "ai";
   content: string;
+  sources?: { text: string; source: string }[];
 }
 
 export default function ChatWindow() {
@@ -21,19 +22,26 @@ export default function ChatWindow() {
     setMessages(newMessages);
     setInput("");
 
-    // 🔗 Call FastAPI
-    const res = await fetch("http://localhost:8000/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query: input }),
-    });
+    try {
+      const res = await fetch("http://127.0.0.1:8000/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: input }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    setMessages([
-      ...newMessages,
-      { role: "ai", content: data.answer },
-    ]);
+      setMessages([
+        ...newMessages,
+        {
+          role: "ai",
+          content: data.answer,
+          sources: data.sources,
+        },
+      ]);
+    } catch (error) {
+      console.error("Error fetching chat:", error);
+    }
   };
 
   return (
@@ -45,6 +53,18 @@ export default function ChatWindow() {
               <p>
                 <strong>{msg.role === "user" ? "You" : "AI"}:</strong> {msg.content}
               </p>
+              {msg.role === "ai" && msg.sources && (
+                <div className="mt-2 text-sm text-gray-600">
+                  <p className="font-semibold">Sources:</p>
+                  <ul className="list-disc ml-4">
+                    {msg.sources.map((src, idx) => (
+                      <li key={idx}>
+                        <em>{src.source}:</em> {src.text}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </CardContent>
           </Card>
         ))}

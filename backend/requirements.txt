@@ -5,5 +5,5 @@ python-multipart
 openai
 langchain
 PyPDF2
-pinecone-client
+pinecone
 chromadb
