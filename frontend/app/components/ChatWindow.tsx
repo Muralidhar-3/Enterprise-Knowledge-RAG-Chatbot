@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { useRef, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -11,50 +10,56 @@ interface Message {
   sources?: { text: string; source: string }[];
 }
 
-export default function ChatWindow() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState("");
+interface ChatWindowProps {
+  currentSession: { id: number; messages: Message[] } | null;
+  input: string;
+  setInput: (v: string) => void;
+  sendMessage: () => void;
+  loading: boolean;
+}
 
-  const sendMessage = async () => {
-    if (!input.trim()) return;
+export default function ChatWindow({
+  currentSession,
+  input,
+  setInput,
+  sendMessage,
+  loading,
+}: ChatWindowProps) {
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-    const newMessages = [...messages, { role: "user" as const, content: input }];
-    setMessages(newMessages);
-    setInput("");
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [currentSession?.messages, loading]);
 
-    try {
-      const res = await fetch("http://127.0.0.1:8000/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: input }),
-      });
-
-      const data = await res.json();
-
-      setMessages([
-        ...newMessages,
-        {
-          role: "ai",
-          content: data.answer,
-          sources: data.sources,
-        },
-      ]);
-    } catch (error) {
-      console.error("Error fetching chat:", error);
-    }
-  };
+  if (!currentSession) {
+    return (
+      <div className="flex-1 flex items-center justify-center text-gray-500">
+        Start a new chat to begin
+      </div>
+    );
+  }
 
   return (
-    <div className="w-full max-w-2xl">
-      <div className="h-96 overflow-y-auto border rounded-md p-4 mb-4 space-y-2">
-        {messages.map((msg, i) => (
-          <Card key={i} className={msg.role === "user" ? "bg-blue-50" : "bg-gray-100"}>
-            <CardContent className="p-2">
-              <p>
-                <strong>{msg.role === "user" ? "You" : "AI"}:</strong> {msg.content}
-              </p>
+    <div className="flex-1 flex flex-col">
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {currentSession.messages.map((msg, i) => (
+          <div
+            key={i}
+            className={`flex ${
+              msg.role === "user" ? "justify-end" : "justify-start"
+            }`}
+          >
+            <div
+              className={`max-w-[75%] px-4 py-2 rounded-2xl ${
+                msg.role === "user"
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 text-gray-900"
+              }`}
+            >
+              <p>{msg.content}</p>
               {msg.role === "ai" && msg.sources && (
-                <div className="mt-2 text-sm text-gray-600">
+                <div className="mt-2 text-xs text-gray-700 border-t border-gray-300 pt-2">
                   <p className="font-semibold">Sources:</p>
                   <ul className="list-disc ml-4">
                     {msg.sources.map((src, idx) => (
@@ -65,18 +70,32 @@ export default function ChatWindow() {
                   </ul>
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         ))}
+
+        {loading && (
+          <div className="flex justify-start">
+            <div className="bg-gray-200 text-gray-700 px-4 py-2 rounded-2xl animate-pulse">
+              AI is thinking...
+            </div>
+          </div>
+        )}
+
+        <div ref={messagesEndRef} />
       </div>
 
-      <div className="flex gap-2">
+      {/* Input */}
+      <div className="border-t p-3 flex gap-2">
         <Input
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask something..."
+          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
         />
-        <Button onClick={sendMessage}>Send</Button>
+        <Button onClick={sendMessage} disabled={loading}>
+          Send
+        </Button>
       </div>
     </div>
   );
