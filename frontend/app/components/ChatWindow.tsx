@@ -10,8 +10,14 @@ interface Message {
   sources?: { text: string; source: string }[];
 }
 
+interface Session {
+  id: number;
+  messages: Message[];
+}
+
 interface ChatWindowProps {
-  currentSession: { id: number; messages: Message[] } | null;
+  currentSession: Session | null;
+  setCurrentSession: (session: Session | null) => void; // ✅ added setter
   input: string;
   setInput: (v: string) => void;
   sendMessage: () => void;
@@ -20,6 +26,7 @@ interface ChatWindowProps {
 
 export default function ChatWindow({
   currentSession,
+  setCurrentSession,
   input,
   setInput,
   sendMessage,
@@ -27,9 +34,35 @@ export default function ChatWindow({
 }: ChatWindowProps) {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
+  // scroll into view on new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [currentSession?.messages, loading]);
+
+  // 🔹 Load persisted chats
+  useEffect(() => {
+    const saved = localStorage.getItem("chatSessions");
+    if (saved && !currentSession) {
+      const sessions: Session[] = JSON.parse(saved);
+      if (sessions.length > 0) {
+        setCurrentSession(sessions[sessions.length - 1]); // load last session
+      }
+    }
+  }, []);
+
+  // 🔹 Save chat when messages change
+  useEffect(() => {
+    if (currentSession) {
+      const saved = localStorage.getItem("chatSessions");
+      const sessions: Session[] = saved ? JSON.parse(saved) : [];
+      const updated = sessions.map((s) =>
+        s.id === currentSession.id ? currentSession : s
+      );
+      const exists = sessions.some((s) => s.id === currentSession.id);
+      if (!exists) updated.push(currentSession);
+      localStorage.setItem("chatSessions", JSON.stringify(updated));
+    }
+  }, [currentSession]);
 
   if (!currentSession) {
     return (
@@ -40,7 +73,7 @@ export default function ChatWindow({
   }
 
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="flex-1 flex flex-col min-w-[75%] max-w-[75%]">
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {currentSession.messages.map((msg, i) => (

@@ -82,6 +82,7 @@ export default function Home() {
         <FileUpload />
         <ChatWindow
           currentSession={currentSession}
+          setCurrentSession={setCurrentSession}
           input={input}
           setInput={setInput}
           sendMessage={sendMessage}
