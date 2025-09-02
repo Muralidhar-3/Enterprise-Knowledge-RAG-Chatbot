@@ -65,7 +65,7 @@ export default function Home() {
   };
 
   return (
-    <main className="flex h-screen">
+    <main className="flex h-screen overflow-hidden">
       <Sidebar
         sessions={sessions}
         currentSessionId={currentSession?.id || null}

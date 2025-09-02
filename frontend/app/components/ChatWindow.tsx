@@ -73,7 +73,7 @@ export default function ChatWindow({
   }
 
   return (
-    <div className="flex-1 flex flex-col min-w-[75%] max-w-[75%]">
+    <div className="flex-1 flex flex-col h-80 min-w-[75%] max-w-[75%]">
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {currentSession.messages.map((msg, i) => (
