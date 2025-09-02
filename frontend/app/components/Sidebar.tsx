@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu, X, Plus } from "lucide-react";
+import { Menu, X, SquarePen  } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface SidebarProps {
@@ -57,7 +57,7 @@ export default function Sidebar({
           className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700"
           onClick={onNewSession}
         >
-          <Plus size={18} />
+          <SquarePen size={18} />
           <span className={`${sidebarOpen ? "block" : "hidden"} font-semibold`}>
             New Chat
           </span>

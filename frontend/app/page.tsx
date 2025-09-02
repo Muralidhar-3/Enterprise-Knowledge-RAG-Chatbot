@@ -76,7 +76,7 @@ export default function Home() {
       />
 
       <div className="flex flex-col items-center flex-1">
-        <h1 className="text-2xl font-bold p-4 border-b">
+        <h1 className="text-2xl font-bold p-4">
           Enterprise-Knowledge-RAG-Chatbot
         </h1>
         <FileUpload />

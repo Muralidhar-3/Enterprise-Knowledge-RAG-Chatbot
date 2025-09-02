@@ -3,6 +3,9 @@
 import { useRef, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { ChevronDown, ChevronRight } from "lucide-react";
+
 
 interface Message {
   role: "user" | "ai";
@@ -33,6 +36,16 @@ export default function ChatWindow({
   loading,
 }: ChatWindowProps) {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  const [openSources, setOpenSources] = useState<{ [key: number]: boolean }>({});
+
+  // Toggle for sources
+  const toggleOpen = (index: number) => {
+    setOpenSources((prev) => ({
+      ...prev,
+      [index]: !prev[index],
+    }));
+  };
 
   // scroll into view on new messages
   useEffect(() => {
@@ -72,6 +85,8 @@ export default function ChatWindow({
     );
   }
 
+  
+
   return (
     <div className="flex-1 flex flex-col h-80 min-w-[75%] max-w-[75%]">
       {/* Messages */}
@@ -93,16 +108,30 @@ export default function ChatWindow({
               <p>{msg.content}</p>
               {msg.role === "ai" && msg.sources && (
                 <div className="mt-2 text-xs text-gray-700 border-t border-gray-300 pt-2">
-                  <p className="font-semibold">Sources:</p>
-                  <ul className="list-disc ml-4">
-                    {msg.sources.map((src, idx) => (
-                      <li key={idx}>
-                        <em>{src.source}:</em> {src.text}
-                      </li>
-                    ))}
-                  </ul>
+                  <button
+                    onClick={() => toggleOpen(i)}
+                    className="flex items-center gap-1 font-semibold text-gray-800 hover:underline"
+                  >
+                    {openSources[i] ? (
+                      <ChevronDown size={14} />
+                    ) : (
+                      <ChevronRight size={14} />
+                    )}
+                    Sources
+                  </button>
+
+                  {openSources[i] && (
+                    <ul className="list-disc ml-5 mt-2 space-y-1">
+                      {msg.sources.map((src, idx) => (
+                        <li key={idx}>
+                          <em>{src.source}:</em> {src.text}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               )}
+
             </div>
           </div>
         ))}
@@ -119,7 +148,7 @@ export default function ChatWindow({
       </div>
 
       {/* Input */}
-      <div className="border-t p-3 flex gap-2">
+      <div className="p-3 flex gap-2">
         <Input
           value={input}
           onChange={(e) => setInput(e.target.value)}
