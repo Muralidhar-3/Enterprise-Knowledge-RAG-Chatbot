@@ -61,6 +61,9 @@ def extract_text_from_pdf(file_path: str) -> str:
 # --------------------
 # File Upload Endpoint
 # --------------------
+
+uploaded_files = []
+
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
     file_path = f"uploaded_{file.filename}"
@@ -89,11 +92,52 @@ async def upload_file(file: UploadFile = File(...)):
         })
     index.upsert(vectors=vectors)
 
+    # Track file
+    if file.filename not in uploaded_files:
+        uploaded_files.append(file.filename)
+
     return {
         "status": "success",
         "filename": file.filename,
         "chunks_added": len(chunks)
     }
+
+@app.get("/files")
+async def list_files():
+    return {"files": uploaded_files}
+
+@app.delete("/files/{filename}")
+async def delete_file(filename: str):
+    global uploaded_files
+    # Remove from list
+    if filename in uploaded_files:
+        uploaded_files.remove(filename)
+    
+    # Delete all chunks for that file in Pinecone
+    prefix = f"{filename}_"
+    ids_to_delete = []
+    # Collect IDs by scanning index (or if your Pinecone supports filter delete, better)
+    query = index.query(vector=[0.0]*384, top_k=10000, include_metadata=True)
+    for match in query.get("matches", []):
+        if match["id"].startswith(prefix):
+            ids_to_delete.append(match["id"])
+    
+    if ids_to_delete:
+        index.delete(ids=ids_to_delete)
+
+    return {"status": "success", "message": f"Deleted {filename}"}
+
+@app.delete("/files/reset")
+async def reset_files():
+    global uploaded_files
+    uploaded_files = []
+    
+    # Delete ALL vectors from Pinecone index
+    index.delete(filter={})
+
+    return {"status": "success", "message": "Knowledge base reset"}
+
+print(index.describe_index_stats())
 
 # --------------------
 # Chat Endpoint (Gemini + Pinecone)
