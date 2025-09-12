@@ -56,6 +56,19 @@ export default function Sidebar({
             </button>
             </div>
 
+            {/* New Chat Button */}
+            <div className="p-4">
+            <Button
+            className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700"
+            onClick={onNewSession}
+            >
+            <SquarePen size={18} />
+            <span className={`${sidebarOpen ? "block" : "hidden"} font-semibold`}>
+                  New Chat
+            </span>
+            </Button>
+            </div>
+
             {/* Session List */}
             <div className="flex-1 overflow-y-auto p-2 space-y-2">
             {sessions.map((s) => (
@@ -81,7 +94,7 @@ export default function Sidebar({
             {sidebarOpen && (filesOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />)}
             </button>
             {filesOpen && sidebarOpen && (
-            <div className="pl-4 space-y-2">
+            <div className="pl-4 space-y-2 pb-5">
                   {files.length === 0 && <p className="text-gray-400 text-sm">No files uploaded</p>}
                   {files.map(f => (
                   <div key={f} className="flex items-center justify-between text-sm bg-gray-800 px-2 py-1 rounded">
@@ -98,18 +111,7 @@ export default function Sidebar({
             )}
             </div>
 
-            {/* New Chat Button */}
-            <div className="p-4">
-            <Button
-            className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700"
-            onClick={onNewSession}
-            >
-            <SquarePen size={18} />
-            <span className={`${sidebarOpen ? "block" : "hidden"} font-semibold`}>
-                  New Chat
-            </span>
-            </Button>
-            </div>
+            
       </div>
       );
 }
