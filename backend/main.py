@@ -158,20 +158,27 @@ async def chat(query: Query):
     for match in results["matches"]
     ]
 
-    # 3. Construct context
+     # 3. If no context found → return directly
+    if not retrieved_chunks or len(retrieved_chunks) == 0:
+        return {
+            "answer": "No context available in the knowledge base.",
+            "sources": []
+        }
+
+    # 4. Construct context
     context = "\n\n".join([chunk["text"] for chunk in retrieved_chunks])
 
-    # 4. Send to Gemini
+    # 5. Send to Gemini
     prompt = f"""You are a helpful assistant.
-Use the following context to answer the user's question.
+    Use the following context to answer the user's question.
 
-Context:
-{context}
+    Context:
+    {context}
 
-Question:
-{query.query}
+    Question:
+    {query.query}
 
-Answer:"""
+    Answer:"""
 
     response = gemini_model.generate_content(prompt)
 
