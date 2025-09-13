@@ -14,7 +14,7 @@ export default function LandingPage() {
   }, []);
 
   const handleGetStarted = () => {
-    router.push("/");
+    router.push("/chat");
   };
 
   return (
