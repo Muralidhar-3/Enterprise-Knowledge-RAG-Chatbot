@@ -44,7 +44,7 @@ export default function FileUpload() {
         ref={fileInputRef}
         type="file"
         onChange={(e) => setFile(e.target.files?.[0] || null)}
-        className="w-72"
+        className="w-72 bg-gray-100 text-black cursor-pointer"
       />
 
       {/* {file && (

@@ -4,7 +4,7 @@ import { useRef, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight, Brain } from "lucide-react";
 
 
 interface Message {
@@ -79,8 +79,12 @@ export default function ChatWindow({
 
   if (!currentSession) {
     return (
-      <div className="flex-1 flex items-center justify-center text-gray-500">
-        Start a new chat to begin
+      <div className="flex-1 flex items-center justify-center text-gray-400 bg-gray-900/10 rounded-lg border border-gray-800 m-4">
+        <div className="text-center">
+          <Brain className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+          <p className="text-lg">Start a new chat to begin</p>
+          <p className="text-sm text-gray-500 mt-2">Upload documents and ask questions about your knowledge base</p>
+        </div>
       </div>
     );
   }
@@ -88,9 +92,9 @@ export default function ChatWindow({
   
 
   return (
-    <div className="flex-1 flex flex-col h-80 min-w-[75%] max-w-[75%]">
+    <div className="flex-1 flex flex-col h-80 min-w-[75%] max-w-[75%] bg-black">
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-900/20 rounded-t-lg border border-gray-800">
         {currentSession.messages.map((msg, i) => (
           <div
             key={i}
@@ -101,16 +105,16 @@ export default function ChatWindow({
             <div
               className={`max-w-[75%] px-4 py-2 rounded-2xl ${
                 msg.role === "user"
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200 text-gray-900"
+                  ? "bg-white text-black"
+                  : "bg-gray-800 text-white border border-gray-700"
               }`}
             >
               <p>{msg.content}</p>
               {msg.role === "ai" && msg.sources && (
-                <div className="mt-2 text-xs text-gray-700 border-t border-gray-300 pt-2">
+                <div className="mt-2 text-xs text-gray-400 border-t border-gray-600 pt-2">
                   <button
                     onClick={() => toggleOpen(i)}
-                    className="flex items-center gap-1 font-semibold text-gray-800 hover:underline"
+                    className="flex items-center gap-1 font-semibold text-gray-300 hover:text-white hover:underline"
                   >
                     {openSources[i] ? (
                       <ChevronDown size={14} />
@@ -123,7 +127,7 @@ export default function ChatWindow({
                   {openSources[i] && (
                     <ul className="list-disc ml-5 mt-2 space-y-1">
                       {msg.sources.map((src, idx) => (
-                        <li key={idx}>
+                        <li key={idx} className="text-gray-400">
                           <em>{src.source}:</em> {src.text}
                         </li>
                       ))}
@@ -138,7 +142,7 @@ export default function ChatWindow({
 
         {loading && (
           <div className="flex justify-start">
-            <div className="bg-gray-200 text-gray-700 px-4 py-2 rounded-2xl animate-pulse">
+            <div className="bg-gray-800 text-gray-300 px-4 py-2 rounded-2xl animate-pulse border border-gray-700">
               AI is thinking...
             </div>
           </div>
@@ -148,14 +152,19 @@ export default function ChatWindow({
       </div>
 
       {/* Input */}
-      <div className="p-3 flex gap-2">
+      <div className="p-3 flex gap-2 bg-gray-900/20 rounded-b-lg border-x border-b border-gray-800">
         <Input
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask something..."
           onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+          className="bg-gray-800 border-gray-700 text-white placeholder-gray-400 focus:border-gray-600"
         />
-        <Button onClick={sendMessage} disabled={loading}>
+        <Button 
+          onClick={sendMessage} 
+          disabled={loading}
+          className="bg-white text-black hover:bg-gray-200 transition-all duration-300"
+        >
           Send
         </Button>
       </div>
