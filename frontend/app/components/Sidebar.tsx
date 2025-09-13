@@ -44,10 +44,10 @@ export default function Sidebar({
       <div
             className={`${
             sidebarOpen ? "w-64" : "w-16"
-            } bg-gray-900 text-white flex flex-col transition-all duration-300`}
+            } bg-gray-950 text-white flex flex-col transition-all duration-300 border-r border-gray-800`}
       >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-700">
+            <div className="flex items-center justify-between p-4 border-b border-gray-800">
             <span className={`${sidebarOpen ? "block" : "hidden"} font-bold`}>
             Chats
             </span>
@@ -59,7 +59,7 @@ export default function Sidebar({
             {/* New Chat Button */}
             <div className="p-4">
             <Button
-            className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700"
+            className="w-full flex items-center justify-center gap-2 bg-white text-black hover:bg-gray-200 transition-all duration-300"
             onClick={onNewSession}
             >
             <SquarePen size={18} />
@@ -75,7 +75,7 @@ export default function Sidebar({
             <button
                   key={s.id}
                   className={`w-full text-left px-3 py-2 rounded-md ${
-                  currentSessionId === s.id ? "bg-gray-700" : "hover:bg-gray-800"
+                  currentSessionId === s.id ? "bg-gray-800" : "hover:bg-gray-900"
                   }`}
                   onClick={() => onSelectSession(s.id)}
             >
@@ -85,10 +85,10 @@ export default function Sidebar({
             </div>
 
             {/* Uploaded Files Section */}
-            <div className="border-t border-gray-700">
+           <div className="border-t border-gray-800">
             <button
             onClick={() => setFilesOpen(!filesOpen)}
-            className="flex items-center justify-between w-full px-4 py-2 hover:bg-gray-800"
+           className="flex items-center justify-between w-full px-4 py-2 hover:bg-gray-900"
             >
             <span>{sidebarOpen ? "Uploaded Files" : "📂"}</span>
             {sidebarOpen && (filesOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />)}
@@ -97,7 +97,7 @@ export default function Sidebar({
             <div className="pl-4 space-y-2 pb-5">
                   {files.length === 0 && <p className="text-gray-400 text-sm">No files uploaded</p>}
                   {files.map(f => (
-                  <div key={f} className="flex items-center justify-between text-sm bg-gray-800 px-2 py-1 rounded">
+                 <div key={f} className="flex items-center justify-between text-sm bg-gray-900 px-2 py-1 rounded">
                   <span className="truncate">{f}</span>
                   <button onClick={() => deleteFile(f)} className="text-red-400 hover:text-red-600">
                         <Trash2 size={14} />

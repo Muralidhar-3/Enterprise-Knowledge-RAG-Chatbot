@@ -1,16 +1,24 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Home, Brain } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import FileUpload from "../components/FileUpload";
 import ChatWindow from "../components/ChatWindow";
 import Sidebar from "../components/Sidebar";
 
 export default function ChatPage() {
+  const router = useRouter();
   const [sessions, setSessions] = useState<any[]>([]);
   const [currentSession, setCurrentSession] = useState<any | null>(null);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  const handleGoHome = () => {
+    router.push("/landing");
+  };
 
   const startNewSession = () => {
     const newSession = {
@@ -65,7 +73,7 @@ export default function ChatPage() {
   };
 
   return (
-    <main className="flex h-screen overflow-hidden">
+    <main className="flex h-screen overflow-hidden bg-black text-white">
       <Sidebar
         sessions={sessions}
         currentSessionId={currentSession?.id || null}
@@ -75,10 +83,27 @@ export default function ChatPage() {
         toggleSidebar={() => setSidebarOpen(!sidebarOpen)}
       />
 
-      <div className="flex flex-col items-center flex-1">
-        <h1 className="text-2xl font-bold p-4">
-          Enterprise-Knowledge-RAG-Chatbot
-        </h1>
+      <div className="flex flex-col flex-1 bg-black">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-gray-800">
+          <div className="flex items-center space-x-3">
+            <Brain className="w-8 h-8 text-white" />
+            <h1 className="text-2xl font-bold text-white">
+              Enterprise Knowledge RAG
+            </h1>
+          </div>
+          <Button 
+            onClick={handleGoHome}
+            variant="outline" 
+            className="flex items-center space-x-2 border-gray-600 text-white hover:bg-gray-900 hover:border-white transition-all duration-300"
+          >
+            <Home className="w-4 h-4" />
+            <span>Home</span>
+          </Button>
+        </div>
+
+        {/* Main Content */}
+        <div className="flex flex-col items-center flex-1 p-6">
         <FileUpload />
         <ChatWindow
           currentSession={currentSession}
@@ -88,6 +113,7 @@ export default function ChatPage() {
           sendMessage={sendMessage}
           loading={loading}
         />
+        </div>
       </div>
     </main>
   );

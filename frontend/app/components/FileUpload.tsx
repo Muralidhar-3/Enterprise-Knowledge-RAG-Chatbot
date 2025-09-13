@@ -39,12 +39,12 @@ export default function FileUpload() {
   };
 
   return (
-    <div className="mb-6 flex gap-2 items-center">
+    <div className="mb-6 flex gap-2 items-center p-4 bg-gray-900/20 rounded-lg border border-gray-800">
       <Input
         ref={fileInputRef}
         type="file"
         onChange={(e) => setFile(e.target.files?.[0] || null)}
-        className="w-72"
+        className="w-72 bg-gray-800 border-gray-700 text-white file:bg-gray-700 file:text-white file:border-gray-600"
       />
 
       {/* {file && (
@@ -56,7 +56,7 @@ export default function FileUpload() {
       <Button
         onClick={handleUpload}
         disabled={!file || isUploading}
-        className="flex items-center gap-2"
+        className="flex items-center gap-2 bg-white text-black hover:bg-gray-200 transition-all duration-300"
       >
         {isUploading ? (
           <>
