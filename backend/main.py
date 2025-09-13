@@ -6,6 +6,9 @@ from pypdf import PdfReader
 from sentence_transformers import SentenceTransformer
 from pinecone import Pinecone, ServerlessSpec
 import google.generativeai as genai
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # --------------------
 # Setup FastAPI + CORS
@@ -22,7 +25,7 @@ app.add_middleware(
 # --------------------
 # Setup Pinecone
 # --------------------
-PINECONE_API_KEY = os.getenv("PINECONE_API_KEY", "pcsk_3LjMzT_3JtwzUPL7kU5xUkcmjc9QLENUzL1jK9rso2nU27pQHcdkxvACmKbtSG54bWyxx9")
+PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
 INDEX_NAME = "knowledge-base"
 
 pc = Pinecone(api_key=PINECONE_API_KEY)
@@ -44,7 +47,7 @@ embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
 # --------------------
 # Setup Gemini
 # --------------------
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyAb83X_-HwnydYLlXrhHTaLx_Lkk4MlLB4")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=GEMINI_API_KEY)
 gemini_model = genai.GenerativeModel("gemini-1.5-flash")
 
