@@ -3,7 +3,7 @@ uvicorn
 pydantic
 python-multipart
 pypdf
-pinecone-client
-langchain
-python-dotenv
+sentence-transformers
+pinecone
 google-generativeai
+python-dotenv
